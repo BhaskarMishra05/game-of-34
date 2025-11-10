@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Level - Connection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #581c87 0%, #9d174d 50%, #581c87 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            position: relative;
+            min-height: 100vh;
+            padding: 3rem 2rem;
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            opacity: 0.2;
+            animation: float ease-in-out infinite;
+        }
+
+        .particle svg {
+            fill: #fbcfe8;
+        }
+
+        /* Header */
+        .header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fade-in 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #fbcfe8, #e9d5ff, #fbcfe8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: #fce7f3;
+            opacity: 0.9;
+        }
+
+        /* Levels Grid */
+        .levels-grid {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        /* Level Card */
+        .level-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(236, 72, 153, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fade-in-up 0.6s ease-out backwards;
+        }
+
+        .level-card:nth-child(1) { animation-delay: 0.1s; }
+        .level-card:nth-child(2) { animation-delay: 0.2s; }
+        .level-card:nth-child(3) { animation-delay: 0.3s; }
+        .level-card:nth-child(4) { animation-delay: 0.4s; }
+        .level-card:nth-child(5) { animation-delay: 0.5s; }
+        .level-card:nth-child(6) { animation-delay: 0.6s; }
+        .level-card:nth-child(7) { animation-delay: 0.7s; }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(168, 85, 247, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .level-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(236, 72, 153, 0.6);
+            box-shadow: 0 20px 40px rgba(236, 72, 153, 0.3);
+        }
+
+        .level-card:hover::before {
+            opacity: 1;
+        }
+
+        .level-number {
+            position: relative;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ec4899;
+            margin-bottom: 0.5rem;
+        }
+
+        .level-title {
+            position: relative;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #fce7f3;
+            margin-bottom: 0.75rem;
+        }
+
+        .level-description {
+            position: relative;
+            font-size: 0.9rem;
+            color: #e9d5ff;
+            opacity: 0.8;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .level-meta {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: #d8b4fe;
+            opacity: 0.7;
+        }
+
+        .intimate-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #fca5a5;
+            margin-top: 0.5rem;
+        }
+
+        /* Exit Button */
+        .exit-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 50;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+            animation: fade-in 1s ease-out 0.8s backwards;
+        }
+
+        .exit-button:hover {
+            transform: scale(1.1) rotate(-90deg);
+            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.6);
+        }
+
+        .exit-button svg {
+            width: 28px;
+            height: 28px;
+            stroke: white;
+            stroke-width: 2.5;
+        }
+
+        /* Consent Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            animation: fade-in 0.3s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #581c87, #9d174d);
+            border: 2px solid rgba(236, 72, 153, 0.5);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 500px;
+            margin: 2rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: scale-in 0.3s ease-out;
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            fill: #fca5a5;
+        }
+
+        .modal h2 {
+            font-size: 1.75rem;
+            color: #fce7f3;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .modal p {
+            font-size: 1rem;
+            color: #e9d5ff;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .modal-warning {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-warning p {
+            font-size: 0.9rem;
+            color: #fca5a5;
+            margin: 0;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .modal-button {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-button.primary {
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+        }
+
+        .modal-button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(236, 72, 153, 0.4);
+        }
+
+        .modal-button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fce7f3;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        .modal-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fade-in-up {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes scale-in {
+            from { 
+                opacity: 0; 
+                transform: scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .levels-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .exit-button {
+                width: 50px;
+                height: 50px;
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating particles background -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Choose Your Level</h1>
+            <p>Select a level to begin your journey of connection</p>
+        </div>
+
+        <!-- Levels Grid -->
+        <div class="levels-grid">
+            <!-- Level 1 -->
+            <div class="level-card" onclick="goToLevel(1)">
+                <div class="level-number">1</div>
+                <div class="level-title">Surface Icebreakers</div>
+                <div class="level-description">
+                    Safe, friendly questions to break the ice and create comfort. Start here!
+                </div>
+                <div class="level-meta">
+                    <span>25 questions</span>
+                    <span>15-20 min</span>
+                </div>
+            </div>
+
+            <!-- Level 2 -->
+            <div class="level-card" onclick="goToLevel(2)">
+                <div class="level-number">2</div>
+                <div class="level-title">Preferences & Personality</div>
+                <div class="level-description">
+                    Reveal your habits, values, and what makes you unique.
+                </div>
+                <div class="level-meta">
+                    <span>25 questions</span>
+                    <span>20-25 min</span>
+                </div>
+            </div>
+
+            <!-- Level 3 -->
+            <div class="level-card" onclick="goToLevel(3)">
+                <div class="level-number">3</div>
+                <div class="level-title">Stories & Experiences</div>
+                <div class="level-description">
+                    Share meaningful moments and memories that shaped who you are.
+                </div>
+                <div class="level-meta">
+                    <span>25 questions</span>
+                    <span>25-30 min</span>
+                </div>
+            </div>
+
+            <!-- Level 4 -->
+            <div class="level-card" onclick="goToLevel(4)">
+                <div class="level-number">4</div>
+                <div class="level-title">Values & Priorities</div>
+                <div class="level-description">
+                    Explore core beliefs, moral principles, and what truly matters.
+                </div>
+                <div class="level-meta">
+                    <span>25 questions</span>
+                    <span>30-35 min</span>
+                </div>
+            </div>
+
+            <!-- Level 5 -->
+            <div class="level-card" onclick="goToLevel(5)">
+                <div class="level-number">5</div>
+                <div class="level-title">Emotional Patterns</div>
+                <div class="level-description">
+                    Discuss feelings, coping mechanisms, and emotional landscapes.
+                </div>
+                <div class="level-meta">
+                    <span>25 questions</span>
+                    <span>35-40 min</span>
+                </div>
+            </div>
+
+            <!-- Level 6 -->
+            <div class="level-card" onclick="showConsentModal(6)">
+                <div class="level-number">6</div>
+                <div class="level-title">Vulnerabilities & Regrets</div>
+                <div class="level-description">
+                    Deep personal disclosure about fears, mistakes, and private hopes.
+                </div>
+                <div class="intimate-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    Highly Intimate
+                </div>
+                <div class="level-meta">
+                    <span>25 questions</span>
+                    <span>40-50 min</span>
+                </div>
+            </div>
+
+            <!-- Level 7 -->
+            <div class="level-card" onclick="showConsentModal(7)">
+                <div class="level-number">7</div>
+                <div class="level-title">Romantic Closeness</div>
+                <div class="level-description">
+                    Research-backed questions designed to accelerate intimacy and connection.
+                </div>
+                <div class="intimate-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    Very Intimate
+                </div>
+                <div class="level-meta">
+                    <span>25 questions</span>
+                    <span>45-60 min</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exit Button -->
+    <button class="exit-button" onclick="goBack()" title="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+    </button>
+
+    <!-- Consent Modal -->
+    <div class="modal-overlay" id="consentModal">
+        <div class="modal">
+            <svg class="modal-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <h2>Intimate Content Warning</h2>
+            <p id="modalText"></p>
+            <div class="modal-warning">
+                <p>
+                    <strong>⚠️ Important:</strong> This level contains deeply personal questions. 
+                    Only proceed if both participants feel safe and comfortable sharing vulnerable information.
+                </p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-button secondary" onclick="closeConsentModal()">
+                    Cancel
+                </button>
+                <button class="modal-button primary" onclick="confirmLevel()">
+                    I Understand, Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedLevel = null;
+
+        // Generate floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 25; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = (Math.random() * 100) + '%';
+            particle.style.top = (Math.random() * 100) + '%';
+            particle.style.animationDelay = (Math.random() * 5) + 's';
+            particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+            
+            const size = 12 + Math.random() * 20;
+            particle.innerHTML = '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Navigate to level (for levels 1-5)
+        function goToLevel(level) {
+            console.log('Navigating to level ' + level);
+            // window.location.href = 'level-' + level + '.html';
+            alert('Navigating to Level ' + level + ' (Create level-' + level + '.html)');
+        }
+
+        // Show consent modal for intimate levels
+        function showConsentModal(level) {
+            selectedLevel = level;
+            const modal = document.getElementById('consentModal');
+            const modalText = document.getElementById('modalText');
+            
+            if (level === 6) {
+                modalText.textContent = 'Level 6 explores vulnerabilities, regrets, and deep fears. These questions require significant emotional openness and trust between participants.';
+            } else if (level === 7) {
+                modalText.textContent = 'Level 7 uses research-backed questions designed to create romantic closeness. This level includes exercises like mutual eye contact and highly personal disclosures.';
+            }
+            
+            modal.classList.add('active');
+        }
+
+        // Close consent modal
+        function closeConsentModal() {
+            const modal = document.getElementById('consentModal');
+            modal.classList.remove('active');
+            selectedLevel = null;
+        }
+
+        // Confirm and proceed to intimate level
+        function confirmLevel() {
+            if (selectedLevel) {
+                console.log('User consented to level ' + selectedLevel);
+                closeConsentModal();
+                // window.location.href = 'level-' + selectedLevel + '.html';
+                alert('Navigating to Level ' + selectedLevel + ' (Create level-' + selectedLevel + '.html)');
+            }
+        }
+
+        // Go back to previous page
+        function goBack() {
+            window.history.back();
+            // Or use: window.location.href = 'index.html';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('consentModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConsentModal();
+            }
+        });
+    </script>
+</body>
+</html>

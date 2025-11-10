@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection - Intimacy Journey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #581c87 0%, #9d174d 50%, #581c87 100%);
+        }
+
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            opacity: 0.3;
+            animation: float ease-in-out infinite;
+        }
+
+        .particle svg {
+            fill: #fbcfe8;
+        }
+
+        /* Main content */
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .logo-container {
+            position: relative;
+            margin-bottom: 1rem;
+            animation: pulse-slow 3s ease-in-out infinite;
+        }
+
+        .logo-sparkles {
+            width: 64px;
+            height: 64px;
+            fill: #fbcfe8;
+        }
+
+        .logo-heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 32px;
+            height: 32px;
+            fill: #e9d5ff;
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #fbcfe8, #e9d5ff, #fbcfe8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            animation: fade-in 1s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #fce7f3;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            animation: fade-in 1s ease-out 0.3s backwards;
+        }
+
+        .description {
+            font-size: 1.125rem;
+            color: #e9d5ff;
+            max-width: 32rem;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+            animation: fade-in 1s ease-out 0.6s backwards;
+        }
+
+        /* Balloon button */
+        .balloon-container {
+            padding-top: 2rem;
+            animation: fade-in 1s ease-out 0.9s backwards;
+        }
+
+        .balloon-button {
+            position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .balloon-button:hover:not(:disabled) {
+            transform: scale(1.1);
+        }
+
+        .balloon-button:disabled {
+            cursor: default;
+        }
+
+        .balloon-svg {
+            filter: drop-shadow(0 25px 25px rgba(0, 0, 0, 0.3));
+        }
+
+        .balloon-text {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+        }
+
+        .hover-glow {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: #f9a8d4;
+            opacity: 0;
+            filter: blur(40px);
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .balloon-button:hover .hover-glow {
+            opacity: 0.2;
+        }
+
+        /* Research note */
+        .research-note {
+            font-size: 0.75rem;
+            color: #d8b4fe;
+            opacity: 0.7;
+            padding-top: 1rem;
+            animation: fade-in 1s ease-out 1.2s backwards;
+        }
+
+        /* Transition overlay */
+        .transition-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: linear-gradient(to bottom, #ec4899, #9333ea, #581c87);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: slide-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .transition-overlay.active {
+            display: flex;
+        }
+
+        .transition-content {
+            text-align: center;
+            animation: fade-in 0.5s ease-out 0.3s backwards;
+        }
+
+        .transition-heart {
+            width: 80px;
+            height: 80px;
+            fill: white;
+            margin: 0 auto 1.5rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .transition-title {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fade-in {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes slide-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.5; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        @keyframes particle-burst {
+            0% { 
+                transform: translate(0, 0) scale(1); 
+                opacity: 1; 
+            }
+            100% { 
+                opacity: 0; 
+            }
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: scale(1.05); 
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .popping {
+            animation: pop 0.4s ease-out forwards;
+        }
+
+        .particle-animate {
+            animation: particle-burst 0.4s ease-out forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+            .subtitle {
+                font-size: 1.25rem;
+            }
+            .description {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Floating particles background -->
+        <div class="particles" id="particles"></div>
+
+        <!-- Main content -->
+        <div class="content">
+            <div class="logo-container">
+                <svg class="logo-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8L12 2Z"/>
+                    <path d="M20 14L21 17L24 18L21 19L20 22L19 19L16 18L19 17L20 14Z"/>
+                </svg>
+                <svg class="logo-heart" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            </div>
+
+            <h1>Connection</h1>
+            <p class="subtitle">From small talk to deep bonds</p>
+            <p class="description">
+                A research-backed journey through 7 levels of intimacy. 
+                Build genuine connections, one conversation at a time.
+            </p>
+
+            <!-- Balloon Button -->
+            <div class="balloon-container">
+                <button class="balloon-button" id="balloonBtn" onclick="popBalloon()">
+                    <svg class="balloon-svg" id="balloonSvg" width="180" height="220" viewBox="0 0 180 220">
+                        <!-- Balloon shape -->
+                        <defs>
+                            <linearGradient id="balloonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f0abfc;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#ec4899;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <ellipse id="balloon" cx="90" cy="90" rx="70" ry="85" 
+                                 fill="url(#balloonGradient)" stroke="#ec4899" stroke-width="2"/>
+                        
+                        <!-- String -->
+                        <path id="string" d="M 90 175 Q 85 190, 90 200" 
+                              stroke="#db2777" stroke-width="2" fill="none"/>
+                        
+                        <!-- Knot -->
+                        <circle id="knot" cx="90" cy="175" r="4" fill="#be185d"/>
+                        
+                        <!-- Shine effect -->
+                        <ellipse id="shine" cx="70" cy="70" rx="20" ry="30" 
+                                 fill="white" opacity="0.3"/>
+                        
+                        <!-- Pop particles container -->
+                        <g id="particles-group"></g>
+                    </svg>
+                    
+                    <div class="balloon-text" id="balloonText">BEGIN</div>
+                    <div class="hover-glow"></div>
+                </button>
+            </div>
+
+            <p class="research-note">
+                Based on research by Aron et al. • 175 curated questions • 7 levels
+            </p>
+        </div>
+    </div>
+
+    <!-- Transition overlay -->
+    <div class="transition-overlay" id="transitionOverlay">
+        <div class="transition-content">
+            <svg class="transition-heart" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <h2 class="transition-title">Let's begin your journey...</h2>
+            <div class="loading-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = (Math.random() * 100) + '%';
+            particle.style.top = (Math.random() * 100) + '%';
+            particle.style.animationDelay = (Math.random() * 5) + 's';
+            particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+            
+            const size = 12 + Math.random() * 20;
+            particle.innerHTML = '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Balloon pop function
+        function popBalloon() {
+            const balloonBtn = document.getElementById('balloonBtn');
+            const balloonSvg = document.getElementById('balloonSvg');
+            const balloon = document.getElementById('balloon');
+            const string = document.getElementById('string');
+            const knot = document.getElementById('knot');
+            const shine = document.getElementById('shine');
+            const balloonText = document.getElementById('balloonText');
+            const particlesGroup = document.getElementById('particles-group');
+            const transitionOverlay = document.getElementById('transitionOverlay');
+
+            // Disable button
+            balloonBtn.disabled = true;
+
+            // Create pop particles
+            for (let i = 0; i < 8; i++) {
+                const particle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                particle.setAttribute('cx', '90');
+                particle.setAttribute('cy', '90');
+                particle.setAttribute('r', '3');
+                particle.setAttribute('fill', '#ec4899');
+                particle.classList.add('particle-animate');
+                
+                const angle = (i * 45) * Math.PI / 180;
+                const distance = 40;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                particle.style.animation = `particle-burst 0.4s ease-out forwards`;
+                particle.style.animationDelay = `${i * 0.02}s`;
+                particle.style.transform = `translate(${tx}px, ${ty}px)`;
+                
+                particlesGroup.appendChild(particle);
+            }
+
+            // Pop animation
+            balloon.classList.add('popping');
+            string.classList.add('popping');
+            knot.classList.add('popping');
+            shine.classList.add('popping');
+            balloonText.classList.add('popping');
+
+            // Show transition after pop
+            setTimeout(() => {
+                transitionOverlay.classList.add('active');
+                
+                // Navigate to next page after transition (example)
+                setTimeout(() => {
+                    window.location.href = '/levels';
+                    console.log('Navigate to next page here');
+                }, 2000);
+            }, 400);
+        }
+    </script>
+</body>
+</html>
