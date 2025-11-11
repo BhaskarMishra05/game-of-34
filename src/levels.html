@@ -529,9 +529,7 @@
 
         // Navigate to level (for levels 1-5)
         function goToLevel(level) {
-            console.log('Navigating to level ' + level);
-            // window.location.href = 'level-' + level + '.html';
-            alert('Navigating to Level ' + level + ' (Create level-' + level + '.html)');
+            window.location.href = '/level-' + level;
         }
 
         // Show consent modal for intimate levels
@@ -559,12 +557,11 @@
         // Confirm and proceed to intimate level
         function confirmLevel() {
             if (selectedLevel) {
-                console.log('User consented to level ' + selectedLevel);
                 closeConsentModal();
-                // window.location.href = 'level-' + selectedLevel + '.html';
-                alert('Navigating to Level ' + selectedLevel + ' (Create level-' + selectedLevel + '.html)');
+                window.location.href = '/level-' + selectedLevel;
             }
         }
+
 
         // Go back to previous page
         function goBack() {

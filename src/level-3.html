@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level 1 - Surface Icebreakers</title>
+    <title>Level 3 - Experiences & Stories</title>
     <style>
         * {
             margin: 0;
@@ -437,6 +437,8 @@
             stroke: white;
             stroke-width: 2.5;
         }
+
+        /* Exit Button */
         .exit-button {
             position: fixed;
             bottom: 2rem;
@@ -525,16 +527,15 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="level-badge">LEVEL 1 OF 7</div>
-            <h1>Surface Icebreakers</h1>
+            <div class="level-badge">LEVEL 3 OF 7</div>
+            <h1>Experiences & Stories</h1>
             <p class="header-description">
-                Welcome to Level 1! These questions are designed to break the ice and create comfort. 
-                They're safe, friendly, and perfect for getting to know each other without pressure.
+                Level 3 invites you to share meaningful moments through storytelling. 
+                These questions explore the experiences that shaped who you are today.
             </p>
             <div class="header-tips">
-                <strong>💡 How it works:</strong> Take turns answering each question. Listen actively, 
-                ask follow-up questions, and check off each question when both of you have answered. 
-                There's no rush—enjoy the conversation!
+                <strong>💡 Storytelling tip:</strong> Share concrete details—what you saw, felt, and learned. 
+                After each story, ask one follow-up question to show you're listening actively.
             </div>
         </div>
 
@@ -552,7 +553,7 @@
         <!-- Next Button -->
         <div class="next-button-container">
             <button class="next-button" onclick="goToNextLevel()">
-                Continue to Level 2
+                Continue to Level 4
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <line x1="5" y1="12" x2="19" y2="12"/>
                     <polyline points="12 5 19 12 12 19"/>
@@ -570,33 +571,33 @@
     </button>
 
     <script>
-        // Level 1 Questions
+        // Level 3 Questions
         const questions = [
-            "What's your favourite simple meal to make when you're tired?",
-            "What's your current wallpaper on your phone and why?",
-            "Tea, coffee, or neither — what's your usual?",
-            "Morning person, night person, or chaotic in-between?",
-            "What hobby do you wish you had more time for?",
-            "What's one app you open first every day?",
-            "Which movie or show could you rewatch forever?",
-            "What city would you visit again without a second thought?",
-            "What's your go-to emoji?",
-            "Are you more detail-oriented or big-picture?",
-            "Do you prefer texts, calls, or in-person chats?",
-            "What was your favourite subject in school?",
-            "What's a small habit that makes your day better?",
-            "What's your default 'weekend' activity?",
-            "Dogs, cats, other, or none — what's your stance?",
-            "Which season makes you happiest and why?",
-            "What's the last photo you took?",
-            "What's something you own that you'd never give away?",
-            "Do you plan ahead or wing it?",
-            "What's a song you put on when you want to feel confident?",
-            "What smell instantly reminds you of childhood?",
-            "Would you rather cook a meal or order in?",
-            "What's a public figure you find inspiring (non-politician)?",
-            "What's your preferred way to relax for 15 minutes?",
-            "Name one small life skill you're proud you learned."
+            "Tell a short story about your most embarrassing moment.",
+            "Tell a short story about something that surprised you recently.",
+            "Describe a teacher or mentor who mattered to you and why.",
+            "What's a trip that changed how you see the world?",
+            "Tell about a time you helped someone and how it felt.",
+            "Describe your first job and one thing you learned.",
+            "Talk about a time you failed and what you did next.",
+            "Describe an instance when you felt proud of yourself.",
+            "Share a childhood memory that's vivid for you.",
+            "Tell about a time you changed your mind about something important.",
+            "Talk about a friendship that shaped who you are.",
+            "Share a moment you were genuinely scared and how you coped.",
+            "Describe a small habit you set that improved your life.",
+            "Tell of a time you felt out of place and how you reacted.",
+            "Share a story of a risk that paid off.",
+            "Describe the best meal you've ever had and why it mattered.",
+            "Tell about a time you forgave someone or were forgiven.",
+            "Describe a time you did something you thought you couldn't.",
+            "Share a vivid memory of laughter with others.",
+            "Describe a time you learned a hard truth about yourself.",
+            "Tell about a person you miss and what you miss about them.",
+            "Share a time when you felt deeply understood.",
+            "Describe a tradition in your family and what it means.",
+            "Tell about a mistake that taught you a practical skill.",
+            "Share a choice you made that altered your path."
         ];
 
         let completedCount = 0;
@@ -655,7 +656,6 @@
             const forfeitCheckbox = card.querySelectorAll('input[type="checkbox"]')[0];
             
             if (completedCheckbox.checked) {
-                // Uncheck forfeit if completed is checked
                 forfeitCheckbox.checked = false;
                 card.classList.remove('forfeited');
                 card.classList.add('completed');
@@ -675,12 +675,10 @@
             const completedCheckbox = card.querySelectorAll('input[type="checkbox"]')[1];
             
             if (forfeitCheckbox.checked) {
-                // Uncheck completed if forfeit is checked
                 completedCheckbox.checked = false;
                 card.classList.remove('completed');
                 card.classList.add('forfeited');
                 
-                // Remove from completed count if it was completed
                 if (card.classList.contains('completed')) {
                     completedCount--;
                 }
@@ -700,10 +698,9 @@
             progressBar.style.width = percentage + '%';
             progressText.textContent = completedCount + ' of ' + questions.length + ' completed';
             
-            // Celebrate when all done
             if (completedCount === questions.length) {
                 setTimeout(() => {
-                    alert('🎉 Amazing! You completed Level 1! Ready for Level 2?');
+                    alert('🎉 Wonderful storytelling! You completed Level 3! Ready for Level 4?');
                 }, 300);
             }
         }
@@ -711,14 +708,13 @@
         // Go back to levels page
         function goBack() {
             window.history.back();
-            // Or use: window.location.href = 'levels.html';
         }
 
         // Go to next level
         function goToNextLevel() {
-            console.log('Going to Level 2');
-            window.location.href = 'level-2';
-            alert('Going to Level 2! (Create level-2.html with similar structure)');
+            console.log('Going to Level 4');
+            window.location.href = 'level-4';
+            alert('Going to Level 4! (Create level-4.html with similar structure)');
         }
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level 1 - Surface Icebreakers</title>
+    <title>Level 2 - Preferences & Personality</title>
     <style>
         * {
             margin: 0;
@@ -437,6 +437,8 @@
             stroke: white;
             stroke-width: 2.5;
         }
+
+        /* Exit Button */
         .exit-button {
             position: fixed;
             bottom: 2rem;
@@ -525,16 +527,15 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="level-badge">LEVEL 1 OF 7</div>
-            <h1>Surface Icebreakers</h1>
+            <div class="level-badge">LEVEL 2 OF 7</div>
+            <h1>Preferences & Personality</h1>
             <p class="header-description">
-                Welcome to Level 1! These questions are designed to break the ice and create comfort. 
-                They're safe, friendly, and perfect for getting to know each other without pressure.
+                Level 2 reveals who you are through your preferences and habits. 
+                These questions explore your personality, decision-making style, and what makes you unique.
             </p>
             <div class="header-tips">
-                <strong>💡 How it works:</strong> Take turns answering each question. Listen actively, 
-                ask follow-up questions, and check off each question when both of you have answered. 
-                There's no rush—enjoy the conversation!
+                <strong>💡 Remember:</strong> Be honest and take your time. Share why you feel the way you do—
+                the "why" often reveals more than the "what." Listen actively and ask follow-up questions!
             </div>
         </div>
 
@@ -552,7 +553,7 @@
         <!-- Next Button -->
         <div class="next-button-container">
             <button class="next-button" onclick="goToNextLevel()">
-                Continue to Level 2
+                Continue to Level 3
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <line x1="5" y1="12" x2="19" y2="12"/>
                     <polyline points="12 5 19 12 12 19"/>
@@ -570,33 +571,33 @@
     </button>
 
     <script>
-        // Level 1 Questions
+        // Level 2 Questions
         const questions = [
-            "What's your favourite simple meal to make when you're tired?",
-            "What's your current wallpaper on your phone and why?",
-            "Tea, coffee, or neither — what's your usual?",
-            "Morning person, night person, or chaotic in-between?",
-            "What hobby do you wish you had more time for?",
-            "What's one app you open first every day?",
-            "Which movie or show could you rewatch forever?",
-            "What city would you visit again without a second thought?",
-            "What's your go-to emoji?",
-            "Are you more detail-oriented or big-picture?",
-            "Do you prefer texts, calls, or in-person chats?",
-            "What was your favourite subject in school?",
-            "What's a small habit that makes your day better?",
-            "What's your default 'weekend' activity?",
-            "Dogs, cats, other, or none — what's your stance?",
-            "Which season makes you happiest and why?",
-            "What's the last photo you took?",
-            "What's something you own that you'd never give away?",
-            "Do you plan ahead or wing it?",
-            "What's a song you put on when you want to feel confident?",
-            "What smell instantly reminds you of childhood?",
-            "Would you rather cook a meal or order in?",
-            "What's a public figure you find inspiring (non-politician)?",
-            "What's your preferred way to relax for 15 minutes?",
-            "Name one small life skill you're proud you learned."
+            "What trait in other people do you most admire?",
+            "What trait in other people annoys you most?",
+            "How do you make decisions — logic first or gut first?",
+            "What book or podcast changed your thinking recently?",
+            "Describe your ideal Saturday in one sentence.",
+            "What would you do differently if you knew no one would judge?",
+            "When stressed, what do you usually do?",
+            "What kind of humour do you enjoy most?",
+            "What personal routine do you never skip?",
+            "Would you call yourself an optimist, pessimist, or realist?",
+            "What single item would you grab if you left home in a hurry?",
+            "If you had one hour with no constraints, how would you spend it?",
+            "What personality test category (e.g., intro/extrovert) fits you best?",
+            "Are you someone who apologises quickly or holds firm?",
+            "What's an opinion you have that surprises people?",
+            "How do you show appreciation to others?",
+            "What's one boundary you don't negotiate?",
+            "What makes you lose track of time?",
+            "Do you prefer planned travel or spontaneous trips?",
+            "When meeting people, do you lead or let others lead?",
+            "What role do compliments play for you—energizing or awkward?",
+            "What personal value would you never compromise?",
+            "Do you enjoy discussing feelings or dislike it?",
+            "What hobby would you pick if you had a year free?",
+            "What's a small but visible sign you're comfortable around someone?"
         ];
 
         let completedCount = 0;
@@ -703,7 +704,7 @@
             // Celebrate when all done
             if (completedCount === questions.length) {
                 setTimeout(() => {
-                    alert('🎉 Amazing! You completed Level 1! Ready for Level 2?');
+                    alert('🎉 Excellent work! You completed Level 2! Ready for Level 3?');
                 }, 300);
             }
         }
@@ -716,9 +717,9 @@
 
         // Go to next level
         function goToNextLevel() {
-            console.log('Going to Level 2');
-            window.location.href = 'level-2';
-            alert('Going to Level 2! (Create level-2.html with similar structure)');
+            console.log('Going to Level 3');
+            window.location.href = 'level-3';
+            alert('Going to Level 3! (Create level-3.html with similar structure)');
         }
     </script>
 </body>
