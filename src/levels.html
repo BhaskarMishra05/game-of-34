@@ -529,12 +529,24 @@
 
         // Navigate to level (for levels 1-5)
         function goToLevel(level) {
-            window.location.href = '/level-' + level;
+            if (level && !isNaN(level)) {
+                console.log('Navigating to level:', level);
+                window.location.href = '/level-' + level;
+            } else {
+                console.error('Invalid level:', level);
+            }
         }
 
         // Show consent modal for intimate levels
         function showConsentModal(level) {
+            if (!level || isNaN(level)) {
+                console.error('Invalid level for modal:', level);
+                return;
+            }
+            
             selectedLevel = level;
+            console.log('Selected level:', selectedLevel);
+            
             const modal = document.getElementById('consentModal');
             const modalText = document.getElementById('modalText');
             
@@ -556,17 +568,23 @@
 
         // Confirm and proceed to intimate level
         function confirmLevel() {
-            if (selectedLevel) {
+            console.log('Confirm level called. Selected level:', selectedLevel);
+            
+            if (selectedLevel !== null && selectedLevel !== undefined && !isNaN(selectedLevel)) {
+                const levelToNavigate = selectedLevel;
+                console.log('Navigating to level:', levelToNavigate);
                 closeConsentModal();
-                window.location.href = '/level-' + selectedLevel;
+                window.location.href = '/level-' + levelToNavigate;
+            } else {
+                console.error('Invalid selectedLevel:', selectedLevel);
+                alert('Error: Invalid level selection. Please try again.');
+                closeConsentModal();
             }
         }
-
 
         // Go back to previous page
         function goBack() {
             window.history.back();
-            // Or use: window.location.href = 'index.html';
         }
 
         // Close modal when clicking outside

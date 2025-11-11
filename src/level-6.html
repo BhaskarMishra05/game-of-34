@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 6 - Vulnerabilities & Regrets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #c21a1a 0%, #8b21a8 45%, #ff66b3 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        /* Consent Modal */
+        .consent-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fade-in 0.4s ease-out;
+        }
+
+        .consent-modal-overlay.hidden {
+            display: none;
+        }
+
+        .consent-modal {
+            background: linear-gradient(135deg, #581c87, #9d174d);
+            border: 3px solid rgba(255, 102, 179, 0.5);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 550px;
+            margin: 2rem;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+            animation: scale-in 0.4s ease-out;
+        }
+
+        .consent-modal-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 1.5rem;
+            fill: #fca5a5;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .consent-modal h2 {
+            font-size: 2rem;
+            color: #fce7f3;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .consent-modal p {
+            font-size: 1.05rem;
+            color: #fce7f3;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .consent-warning {
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .consent-warning p {
+            font-size: 0.95rem;
+            color: #fca5a5;
+            margin: 0;
+        }
+
+        .consent-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .consent-button {
+            flex: 1;
+            padding: 1.25rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .consent-button.primary {
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+        }
+
+        .consent-button.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(236, 72, 153, 0.5);
+        }
+
+        .consent-button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fce7f3;
+            border: 2px solid rgba(236, 72, 153, 0.4);
+        }
+
+        .consent-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            opacity: 0.15;
+            animation: float ease-in-out infinite;
+        }
+
+        .particle svg {
+            fill: rgba(255,255,255,0.85);
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            animation: fade-in 0.8s ease-out;
+        }
+
+        .level-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255,255,255,0.08);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            color: #ffe6f0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffd3e8, #f6e1ff, #ffd3e8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .header-description {
+            font-size: 1.125rem;
+            color: rgba(255, 235, 245, 0.95);
+            max-width: 680px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.6;
+        }
+
+        .header-tips {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 1rem 1.25rem;
+            color: rgba(255, 245, 250, 0.95);
+            font-size: 0.95rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header-tips strong {
+            color: #fff;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            height: 12px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            animation: fade-in 1s ease-out 0.2s backwards;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4d6d, #a855f7);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: rgba(255,240,250,0.9);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Questions List */
+        .questions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: rgba(0,0,0,0.06);
+            backdrop-filter: blur(6px);
+            border: 2px solid rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.4s ease;
+            animation: fade-in-up 0.5s ease-out backwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .question-card:hover::before {
+            opacity: 1;
+        }
+
+        .question-card.completed {
+            background: rgba(16,185,129,0.06);
+            border-color: rgba(16,185,129,0.18);
+        }
+
+        .question-card.completed::before {
+            background: linear-gradient(135deg, rgba(16,185,129,0.02), rgba(34,197,94,0.02));
+        }
+
+        .question-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .question-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .question-number {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #ffdff0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .question-card.completed .question-number {
+            background: rgba(34, 197, 94, 0.4);
+            color: #bbf7d0;
+        }
+
+        .question-card.forfeited .question-number {
+            background: rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+
+        .question-text-container {
+            flex: 1;
+        }
+
+        .question-text {
+            font-size: 1.125rem;
+            color: rgba(255,245,252,0.95);
+            line-height: 1.6;
+        }
+
+        .question-card.completed .question-text {
+            color: rgba(220,255,220,0.95);
+        }
+
+        .question-card.forfeited .question-text {
+            color: rgba(255,200,205,0.95);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        /* Checkbox Container at Bottom */
+        .checkbox-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            margin-top: 0.75rem;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+            padding: 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-left: 1px solid rgba(34, 197, 94, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox:hover {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+
+        .custom-checkbox input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .checkmark {
+            position: relative;
+            height: 24px;
+            width: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(34, 197, 94, 0.6);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .custom-checkbox:hover .checkmark {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(34, 197, 94, 0.8);
+        }
+
+        .custom-checkbox input:checked ~ .checkmark {
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border-color: #22c55e;
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg);
+        }
+
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #bbf7d0;
+        }
+
+        /* Forfeit Checkbox */
+        .forfeit-checkbox {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+            padding: 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-right: 1px solid rgba(239, 68, 68, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .forfeit-checkbox:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .forfeit-checkbox input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .forfeit-mark {
+            position: relative;
+            height: 24px;
+            width: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(239, 68, 68, 0.6);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .forfeit-checkbox:hover .forfeit-mark {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(239, 68, 68, 0.8);
+        }
+
+        .forfeit-checkbox input:checked ~ .forfeit-mark {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+        }
+
+        .forfeit-mark:after,
+        .forfeit-mark:before {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 10px;
+            top: 4px;
+            width: 2.5px;
+            height: 13px;
+            background: white;
+        }
+
+        .forfeit-mark:before {
+            transform: rotate(45deg);
+        }
+
+        .forfeit-mark:after {
+            transform: rotate(-45deg);
+        }
+
+        .forfeit-checkbox input:checked ~ .forfeit-mark:before,
+        .forfeit-checkbox input:checked ~ .forfeit-mark:after {
+            display: block;
+        }
+
+        .forfeit-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fca5a5;
+        }
+
+        .question-card.forfeited {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .question-card.forfeited::before {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.08));
+        }
+
+        /* Next Button */
+        .next-button-container {
+            margin-top: 3rem;
+            margin-bottom: 6rem;
+            display: flex;
+            justify-content: center;
+            animation: fade-in 1s ease-out 0.5s backwards;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #ff365e, #b33cff);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 1.25rem 3rem;
+            border-radius: 50px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .next-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.6);
+        }
+
+        .next-button svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            stroke-width: 2.5;
+        }
+
+        /* Exit Button */
+        .exit-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 50;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff4d6d, #b33cff);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+
+        .exit-button:hover {
+            transform: scale(1.1) rotate(-90deg);
+            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.6);
+        }
+
+        .exit-button svg {
+            width: 28px;
+            height: 28px;
+            stroke: white;
+            stroke-width: 2.5;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fade-in-up {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes scale-in {
+            from { 
+                opacity: 0; 
+                transform: scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Stagger animation delays */
+        .question-card:nth-child(1) { animation-delay: 0.05s; }
+        .question-card:nth-child(2) { animation-delay: 0.1s; }
+        .question-card:nth-child(3) { animation-delay: 0.15s; }
+        .question-card:nth-child(4) { animation-delay: 0.2s; }
+        .question-card:nth-child(5) { animation-delay: 0.25s; }
+        .question-card:nth-child(6) { animation-delay: 0.3s; }
+        .question-card:nth-child(7) { animation-delay: 0.35s; }
+        .question-card:nth-child(8) { animation-delay: 0.4s; }
+        .question-card:nth-child(9) { animation-delay: 0.45s; }
+        .question-card:nth-child(10) { animation-delay: 0.5s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .question-text {
+                font-size: 1rem;
+            }
+            .exit-button {
+                width: 50px;
+                height: 50px;
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+            .consent-modal {
+                padding: 2rem;
+            }
+            .consent-modal h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Consent Modal -->
+    <div class="consent-modal-overlay" id="consentModal">
+        <div class="consent-modal">
+            <svg class="consent-modal-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+            <h2>⚠️ Level 6 Warning</h2>
+            <p>
+                You're about to enter Level 6 — <strong>Vulnerabilities & Regrets</strong>. 
+                This level contains deeply personal questions about fears, mistakes, and private hopes.
+            </p>
+            <div class="consent-warning">
+                <p>
+                    <strong>Important:</strong> These questions require significant emotional openness and trust. 
+                    Only proceed if both participants feel safe and comfortable sharing vulnerable information. 
+                    You can skip any question at any time.
+                </p>
+            </div>
+            <div class="consent-buttons">
+                <button class="consent-button secondary" onclick="exitToLevels()">
+                    Exit to Levels
+                </button>
+                <button class="consent-button primary" onclick="acceptConsent()">
+                    I Understand, Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating particles background -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="level-badge">LEVEL 6 OF 7</div>
+            <h1>Vulnerabilities & Regrets</h1>
+            <p class="header-description">
+                Level 6 explores deep personal disclosure about fears, mistakes, and private hopes. 
+                Approach with care, honesty, and mutual respect.
+            </p>
+            <div class="header-tips">
+                <strong>💡 Important:</strong> Take your time. Reciprocate vulnerability. 
+                If something feels too intense, use the "Forfeit" option. Support each other throughout.
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0 of 25 completed</div>
+
+        <!-- Questions List -->
+        <div class="questions-list" id="questionsList">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+
+        <!-- Next Button -->
+        <div class="next-button-container">
+            <button class="next-button" onclick="goToNextLevel()">
+                Continue to Level 7
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Exit Button -->
+    <button class="exit-button" onclick="goBack()" title="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+    </button>
+
+    <script>
+        // Level 6 Questions
+        const questions = [
+            "What's one regret you still think about and why?",
+            "What's a fear you rarely acknowledge out loud?",
+            "Tell about a time you felt deeply humiliated.",
+            "What's something you worry might be true about you?",
+            "What personal secrecy or private hope do you carry?",
+            "What have you apologised for that was hard to admit?",
+            "What criticism from someone close still stings?",
+            "Describe a time you felt you weren't enough.",
+            "What's a shadow side of your personality you guard?",
+            "When did you feel most alone, and why?",
+            "What's a boundary you wish you'd set earlier?",
+            "Describe a choice you wish you could undo.",
+            "What's a long-term fear about your future relationships?",
+            "When have you been unfair to someone and why?",
+            "What part of your past would you like to explain to others?",
+            "What do you hide when you want to be liked?",
+            "What spoken or unspoken expectation from childhood affects you?",
+            "What's a vulnerability you worry could push people away?",
+            "When have you lied to protect someone, and how did it feel?",
+            "What disappointment shaped your current caution?",
+            "What's a private longing you haven't told many people?",
+            "How do you handle guilt when you feel it's deserved?",
+            "What's the hardest truth you've told yourself?",
+            "Tell about a time you felt ashamed and how you responded.",
+            "What's a hope you feel embarrassed to admit?"
+        ];
+
+        let completedCount = 0;
+
+        // Generate floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = (Math.random() * 100) + '%';
+            particle.style.top = (Math.random() * 100) + '%';
+            particle.style.animationDelay = (Math.random() * 5) + 's';
+            particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+            
+            const size = 12 + Math.random() * 20;
+            particle.innerHTML = '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Generate question cards
+        const questionsList = document.getElementById('questionsList');
+        questions.forEach((question, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = 'question-' + index;
+            
+            card.innerHTML = 
+                '<div class="question-content">' +
+                    '<div class="question-top">' +
+                        '<div class="question-number">' + (index + 1) + '</div>' +
+                        '<div class="question-text-container">' +
+                            '<div class="question-text">' + question + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="checkbox-container">' +
+                        '<label class="forfeit-checkbox">' +
+                            '<input type="checkbox" onchange="toggleForfeit(' + index + ')">' +
+                            '<span class="forfeit-mark"></span>' +
+                            '<span class="forfeit-label">Forfeit</span>' +
+                        '</label>' +
+                        '<label class="custom-checkbox">' +
+                            '<input type="checkbox" onchange="toggleQuestion(' + index + ')">' +
+                            '<span class="checkmark"></span>' +
+                            '<span class="checkbox-label">Completed</span>' +
+                        '</label>' +
+                    '</div>' +
+                '</div>';
+            
+            questionsList.appendChild(card);
+        });
+
+        // Consent modal functions
+        function acceptConsent() {
+            document.getElementById('consentModal').classList.add('hidden');
+        }
+
+        function exitToLevels() {
+            window.location.href = 'levels.html';
+        }
+
+        // Toggle question completion
+        function toggleQuestion(index) {
+            const card = document.getElementById('question-' + index);
+            const completedCheckbox = card.querySelectorAll('input[type="checkbox"]')[1];
+            const forfeitCheckbox = card.querySelectorAll('input[type="checkbox"]')[0];
+            
+            if (completedCheckbox.checked) {
+                forfeitCheckbox.checked = false;
+                card.classList.remove('forfeited');
+                card.classList.add('completed');
+                completedCount++;
+            } else {
+                card.classList.remove('completed');
+                completedCount--;
+            }
+            
+            updateProgress();
+        }
+
+        // Toggle forfeit
+        function toggleForfeit(index) {
+            const card = document.getElementById('question-' + index);
+            const forfeitCheckbox = card.querySelectorAll('input[type="checkbox"]')[0];
+            const completedCheckbox = card.querySelectorAll('input[type="checkbox"]')[1];
+            
+            if (forfeitCheckbox.checked) {
+                completedCheckbox.checked = false;
+                card.classList.remove('completed');
+                card.classList.add('forfeited');
+                
+                if (card.classList.contains('completed')) {
+                    completedCount--;
+                }
+            } else {
+                card.classList.remove('forfeited');
+            }
+            
+            updateProgress();
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const percentage = (completedCount / questions.length) * 100;
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = completedCount + ' of ' + questions.length + ' completed';
+            
+            if (completedCount === questions.length) {
+                setTimeout(() => {
+                    alert('🎉 Incredible courage! You completed Level 6! Ready for Level 7?');
+                }, 300);
+            }
+        }
+
+        // Go back to levels page
+        function goBack() {
+            window.history.back();
+        }
+
+        // Go to next level
+        function goToNextLevel() {
+            console.log('Going to Level 7');
+            // window.location.href = 'level-7.html';
+            alert('Going to Level 7! (Create level-7.html with similar structure)');
+        }
+    </script>
+</body>
+</html>
