@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 7 - Romantic Closeness</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #dc2626 0%, #7c3aed 45%, #ec4899 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        /* Consent Modal */
+        .consent-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fade-in 0.4s ease-out;
+        }
+
+        .consent-modal-overlay.hidden {
+            display: none;
+        }
+
+        .consent-modal {
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            border: 3px solid rgba(236, 72, 153, 0.6);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 580px;
+            margin: 2rem;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
+            animation: scale-in 0.4s ease-out;
+        }
+
+        .consent-modal-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            fill: #fda4af;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .consent-modal h2 {
+            font-size: 2.25rem;
+            color: #fce7f3;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .consent-modal p {
+            font-size: 1.1rem;
+            color: #fce7f3;
+            line-height: 1.75;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .consent-warning {
+            background: rgba(220, 38, 38, 0.2);
+            border: 2px solid rgba(220, 38, 38, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .consent-warning p {
+            font-size: 1rem;
+            color: #fda4af;
+            margin: 0;
+            line-height: 1.7;
+        }
+
+        .consent-warning strong {
+            color: #fee2e2;
+        }
+
+        .consent-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .consent-button {
+            flex: 1;
+            padding: 1.25rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .consent-button.primary {
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: white;
+        }
+
+        .consent-button.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(236, 72, 153, 0.5);
+        }
+
+        .consent-button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fce7f3;
+            border: 2px solid rgba(236, 72, 153, 0.4);
+        }
+
+        .consent-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            opacity: 0.18;
+            animation: float ease-in-out infinite;
+        }
+
+        .particle svg {
+            fill: rgba(255,255,255,0.9);
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            animation: fade-in 0.8s ease-out;
+        }
+
+        .level-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255,255,255,0.12);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            color: #fef3f5;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fecdd3, #f5d0fe, #fecdd3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .header-description {
+            font-size: 1.2rem;
+            color: rgba(255, 240, 245, 0.95);
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.7;
+        }
+
+        .header-tips {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            color: rgba(255, 245, 250, 0.95);
+            font-size: 1rem;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .header-tips strong {
+            color: #fff;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            height: 12px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            animation: fade-in 1s ease-out 0.2s backwards;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #dc2626, #a855f7);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: rgba(255,245,250,0.95);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Questions List */
+        .questions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: rgba(0,0,0,0.08);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.4s ease;
+            animation: fade-in-up 0.5s ease-out backwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .question-card:hover::before {
+            opacity: 1;
+        }
+
+        .question-card.completed {
+            background: rgba(16,185,129,0.08);
+            border-color: rgba(16,185,129,0.2);
+        }
+
+        .question-card.completed::before {
+            background: linear-gradient(135deg, rgba(16,185,129,0.03), rgba(34,197,94,0.03));
+        }
+
+        .question-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .question-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .question-number {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fee2e2;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .question-card.completed .question-number {
+            background: rgba(34, 197, 94, 0.4);
+            color: #bbf7d0;
+        }
+
+        .question-card.forfeited .question-number {
+            background: rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+
+        .question-text-container {
+            flex: 1;
+        }
+
+        .question-text {
+            font-size: 1.125rem;
+            color: rgba(255,250,253,0.96);
+            line-height: 1.7;
+        }
+
+        .question-card.completed .question-text {
+            color: rgba(220,255,220,0.96);
+        }
+
+        .question-card.forfeited .question-text {
+            color: rgba(255,205,210,0.95);
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        /* Checkbox Container at Bottom */
+        .checkbox-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            margin-top: 0.75rem;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+            padding: 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid rgba(34, 197, 94, 0.3);
+            border-left: 1px solid rgba(34, 197, 94, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .custom-checkbox:hover {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.5);
+        }
+
+        .custom-checkbox input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .checkmark {
+            position: relative;
+            height: 24px;
+            width: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(34, 197, 94, 0.6);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .custom-checkbox:hover .checkmark {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(34, 197, 94, 0.8);
+        }
+
+        .custom-checkbox input:checked ~ .checkmark {
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border-color: #22c55e;
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg);
+        }
+
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #bbf7d0;
+        }
+
+        /* Forfeit Checkbox */
+        .forfeit-checkbox {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+            padding: 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-right: 1px solid rgba(239, 68, 68, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .forfeit-checkbox:hover {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .forfeit-checkbox input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .forfeit-mark {
+            position: relative;
+            height: 24px;
+            width: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(239, 68, 68, 0.6);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .forfeit-checkbox:hover .forfeit-mark {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(239, 68, 68, 0.8);
+        }
+
+        .forfeit-checkbox input:checked ~ .forfeit-mark {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: #ef4444;
+        }
+
+        .forfeit-mark:after,
+        .forfeit-mark:before {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 10px;
+            top: 4px;
+            width: 2.5px;
+            height: 13px;
+            background: white;
+        }
+
+        .forfeit-mark:before {
+            transform: rotate(45deg);
+        }
+
+        .forfeit-mark:after {
+            transform: rotate(-45deg);
+        }
+
+        .forfeit-checkbox input:checked ~ .forfeit-mark:before,
+        .forfeit-checkbox input:checked ~ .forfeit-mark:after {
+            display: block;
+        }
+
+        .forfeit-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fca5a5;
+        }
+
+        .question-card.forfeited {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .question-card.forfeited::before {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.08));
+        }
+
+        /* Completion Button */
+        .completion-button-container {
+            margin-top: 3rem;
+            margin-bottom: 6rem;
+            display: flex;
+            justify-content: center;
+            animation: fade-in 1s ease-out 0.5s backwards;
+        }
+
+        .completion-button {
+            background: linear-gradient(135deg, #dc2626, #9333ea);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 1.5rem 3.5rem;
+            border-radius: 50px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 15px 40px rgba(220, 38, 38, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .completion-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(220, 38, 38, 0.6);
+        }
+
+        .completion-button svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        /* Exit Button */
+        .exit-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 50;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc2626, #9333ea);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
+        }
+
+        .exit-button:hover {
+            transform: scale(1.1) rotate(-90deg);
+            box-shadow: 0 15px 40px rgba(220, 38, 38, 0.6);
+        }
+
+        .exit-button svg {
+            width: 28px;
+            height: 28px;
+            stroke: white;
+            stroke-width: 2.5;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fade-in-up {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes scale-in {
+            from { 
+                opacity: 0; 
+                transform: scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Stagger animation delays */
+        .question-card:nth-child(1) { animation-delay: 0.05s; }
+        .question-card:nth-child(2) { animation-delay: 0.1s; }
+        .question-card:nth-child(3) { animation-delay: 0.15s; }
+        .question-card:nth-child(4) { animation-delay: 0.2s; }
+        .question-card:nth-child(5) { animation-delay: 0.25s; }
+        .question-card:nth-child(6) { animation-delay: 0.3s; }
+        .question-card:nth-child(7) { animation-delay: 0.35s; }
+        .question-card:nth-child(8) { animation-delay: 0.4s; }
+        .question-card:nth-child(9) { animation-delay: 0.45s; }
+        .question-card:nth-child(10) { animation-delay: 0.5s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .question-text {
+                font-size: 1rem;
+            }
+            .exit-button {
+                width: 50px;
+                height: 50px;
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+            .consent-modal {
+                padding: 2rem;
+            }
+            .consent-modal h2 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Consent Modal -->
+    <div class="consent-modal-overlay" id="consentModal">
+        <div class="consent-modal">
+            <svg class="consent-modal-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <h2>💕 Level 7 — Final Level</h2>
+            <p>
+                You're about to enter Level 7 — <strong>Romantic Closeness</strong>. 
+                This level uses research-backed questions designed to accelerate intimacy and create deep connection.
+            </p>
+            <div class="consent-warning">
+                <p>
+                    <strong>⚠️ Very Intimate Content:</strong> Level 7 includes exercises like mutual eye contact and highly personal disclosures about love, relationships, and emotional needs. This level is inspired by research by Arthur Aron et al. that generates interpersonal closeness. Only proceed if both participants explicitly consent and feel emotionally safe.
+                </p>
+            </div>
+            <div class="consent-buttons">
+                <button class="consent-button secondary" onclick="exitToLevels()">
+                    Exit to Levels
+                </button>
+                <button class="consent-button primary" onclick="acceptConsent()">
+                    I Consent, Begin Level 7
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating particles background -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="level-badge">LEVEL 7 OF 7 — FINAL LEVEL</div>
+            <h1>Romantic Closeness</h1>
+            <p class="header-description">
+                Level 7 uses escalating reciprocal self-disclosure to create intimacy. 
+                These questions are designed to help you feel deeply connected. Answer honestly, take your time, and support each other.
+            </p>
+            <div class="header-tips">
+                <strong>💕 Research-backed approach:</strong> This level is inspired by Aron et al.'s procedure that generated closeness in lab settings. 
+                Be vulnerable, listen actively, and honor the trust being built between you.
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0 of 25 completed</div>
+
+        <!-- Questions List -->
+        <div class="questions-list" id="questionsList">
+            <!-- Questions will be inserted here by JavaScript -->
+        </div>
+
+        <!-- Completion Button -->
+        <div class="completion-button-container">
+            <button class="completion-button" onclick="completeJourney()">
+                Complete Your Journey
+                <svg viewBox="0 0 24 24">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Exit Button -->
+    <button class="exit-button" onclick="goBack()" title="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+    </button>
+
+    <script>
+        // Level 7 Questions - Romantic Closeness
+        const questions = [
+            "Share something you like about the other person so far (a small, honest observation).",
+            "What would an ideal day together look like for you?",
+            "When did you last feel especially loved or appreciated, and what caused it?",
+            "What is one personal trait you'd like someone close to you to notice and understand?",
+            "What does friendship mean to you in the context of a romantic relationship?",
+            "Tell a memory where you felt deeply connected to someone—what made it intimate?",
+            "What role do love and affection play in your life right now?",
+            "Describe a vulnerability you'd find easier to share with a romantic partner than with others.",
+            "What are 3 things you value in a close relationship (briefly explain each)?",
+            "Share one thing you wish someone would do for you when you're feeling low.",
+            "Make two true 'we' statements together (e.g., 'We are both…')—take 30s each to craft one.",
+            "Finish this sentence: 'I wish I had someone with whom I could share ___.'",
+            "What would you want to be understood about your past relationships?",
+            "What are your main hopes for the next five years in relationships and life?",
+            "Name one fear you have about getting close to someone — why does it matter?",
+            "Share a personal failure that shaped how you love or trust others.",
+            "When do you feel most seen and known by someone else?",
+            "Describe a private dream you haven't told many people about.",
+            "What do you need from a partner when you're at your worst?",
+            "What do you think makes a relationship worth fighting for?",
+            "Exchange what you most want to be encouraged about in life (one sentence each).",
+            "If this relationship became deeper, what would you be most excited to share?",
+            "Share a way you would like to support a partner through a crisis.",
+            "Tell what you appreciate most about the person sitting across from you (be specific).",
+            "For this last one: silently look into each other's eyes for 60 seconds — then share whatever came up for you in one sentence."
+        ];
+
+        let completedCount = 0;
+
+        // Generate floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 25; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = (Math.random() * 100) + '%';
+            particle.style.top = (Math.random() * 100) + '%';
+            particle.style.animationDelay = (Math.random() * 5) + 's';
+            particle.style.animationDuration = (5 + Math.random() * 10) + 's';
+            
+            const size = 14 + Math.random() * 22;
+            particle.innerHTML = '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Generate question cards
+        const questionsList = document.getElementById('questionsList');
+        questions.forEach((question, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = 'question-' + index;
+            
+            card.innerHTML = 
+                '<div class="question-content">' +
+                    '<div class="question-top">' +
+                        '<div class="question-number">' + (index + 1) + '</div>' +
+                        '<div class="question-text-container">' +
+                            '<div class="question-text">' + question + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="checkbox-container">' +
+                        '<label class="forfeit-checkbox">' +
+                            '<input type="checkbox" onchange="toggleForfeit(' + index + ')">' +
+                            '<span class="forfeit-mark"></span>' +
+                            '<span class="forfeit-label">Forfeit</span>' +
+                        '</label>' +
+                        '<label class="custom-checkbox">' +
+                            '<input type="checkbox" onchange="toggleQuestion(' + index + ')">' +
+                            '<span class="checkmark"></span>' +
+                            '<span class="checkbox-label">Completed</span>' +
+                        '</label>' +
+                    '</div>' +
+                '</div>';
+            
+            questionsList.appendChild(card);
+        });
+
+        // Consent modal functions
+        function acceptConsent() {
+            document.getElementById('consentModal').classList.add('hidden');
+        }
+
+        function exitToLevels() {
+            window.location.href = 'levels.html';
+        }
+
+        // Toggle question completion
+        function toggleQuestion(index) {
+            const card = document.getElementById('question-' + index);
+            const completedCheckbox = card.querySelectorAll('input[type="checkbox"]')[1];
+            const forfeitCheckbox = card.querySelectorAll('input[type="checkbox"]')[0];
+            
+            if (completedCheckbox.checked) {
+                forfeitCheckbox.checked = false;
+                card.classList.remove('forfeited');
+                card.classList.add('completed');
+                card.classList.add('completed');
+                completedCount++;
+            } else {
+                card.classList.remove('completed');
+                completedCount--;
+            }
+            
+            updateProgress();
+        }
+
+        // Toggle forfeit
+        function toggleForfeit(index) {
+            const card = document.getElementById('question-' + index);
+            const forfeitCheckbox = card.querySelectorAll('input[type="checkbox"]')[0];
+            const completedCheckbox = card.querySelectorAll('input[type="checkbox"]')[1];
+            
+            if (forfeitCheckbox.checked) {
+                completedCheckbox.checked = false;
+                card.classList.remove('completed');
+                card.classList.add('forfeited');
+                
+                if (card.classList.contains('completed')) {
+                    completedCount--;
+                }
+            } else {
+                card.classList.remove('forfeited');
+            }
+            
+            updateProgress();
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const percentage = (completedCount / questions.length) * 100;
+            
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = completedCount + ' of ' + questions.length + ' completed';
+            
+            if (completedCount === questions.length) {
+                setTimeout(() => {
+                    alert('💕 Congratulations! You completed all 7 levels! Your journey of connection is complete.');
+                }, 300);
+            }
+        }
+
+        // Go back to levels page
+        function goBack() {
+            window.history.back();
+        }
+
+        // Complete journey
+        function completeJourney() {
+            const message = completedCount === questions.length 
+                ? '🎉 Congratulations! You completed Level 7 and your entire journey through all 7 levels of intimacy. Thank you for taking this journey of connection.' 
+                : 'You have ' + completedCount + ' of ' + questions.length + ' questions completed. Complete all questions to finish your journey!';
+            alert(message);
+            
+            if (completedCount === questions.length) {
+                // Optionally redirect to a completion page or back to home
+                // window.location.href = 'completion.html';
+            }
+        }
+    </script>
+</body>
+</html>
